@@ -12,7 +12,7 @@ jobs:
   api:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4"
@@ -54,7 +54,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libclang-dev
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
@@ -71,7 +71,7 @@ jobs:
         run: bundle exec rake spec
       - name: Stage this Ruby ABI
         run: ruby script/stage_binary.rb
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: native-${{ matrix.target.platform }}-${{ matrix.ruby }}
           # Keep the ABI directory inside the artifact for merged downloads.
@@ -85,19 +85,19 @@ jobs:
       matrix:
         target: *native-targets
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           # Assembly only: this job packages both prebuilt Ruby ABIs.
           ruby-version: "3.4"
       - name: Download all Ruby ABIs for this platform
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: native-${{ matrix.target.platform }}-*
           path: lib/rphonetic
           merge-multiple: true
       - run: ruby script/package.rb --platform '${{ matrix.target.platform }}'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: gem-${{ matrix.target.platform }}
           path: pkg/*.gem
@@ -115,11 +115,11 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: gem-${{ matrix.target.platform }}
           path: pkg
@@ -136,12 +136,12 @@ jobs:
   source:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4"
       - run: ruby script/package.rb
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: gem-source
           path: pkg/*.gem
