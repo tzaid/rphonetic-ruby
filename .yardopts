@@ -1,0 +1,5 @@
+--markup markdown
+--readme README.md
+--no-private
+--exclude lib/rphonetic/encoders.rb
+lib/**/*.rb

@@ -1,0 +1,7 @@
+module RPhonetic
+  class Metaphone < Encoder
+    def initialize: (?max_length: Integer?) -> void
+    def self.encode: (String value, ?max_length: Integer?) -> String
+    def self.encode_many: (Array[String] values, ?max_length: Integer?) -> Array[String]
+  end
+end

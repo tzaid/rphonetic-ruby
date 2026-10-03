@@ -1,0 +1,11 @@
+module RPhonetic
+  class DoubleMetaphone < Encoder
+    def initialize: (?max_length: Integer?) -> void
+    def self.encode: (String value, ?max_length: Integer?) -> String
+    def self.encode_many: (Array[String] values, ?max_length: Integer?) -> Array[String]
+
+    def self.codes: (String value, ?max_length: Integer?) -> [String, String]
+    def codes: (String value) -> [String, String]
+    def alternate: (String value) -> String
+  end
+end

@@ -1,0 +1,7 @@
+module RPhonetic
+  class Nysiis < Encoder
+    def initialize: (?strict: bool) -> void
+    def self.encode: (String value, ?strict: bool) -> String
+    def self.encode_many: (Array[String] values, ?strict: bool) -> Array[String]
+  end
+end

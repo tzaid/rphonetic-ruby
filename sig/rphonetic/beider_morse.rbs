@@ -1,0 +1,14 @@
+module RPhonetic
+  class BeiderMorse < Encoder
+    type name_type = :generic | :ashkenazi | :sephardic | "generic" | "ashkenazi" | "sephardic"
+    type rule_type = :approx | :exact | "approx" | "exact"
+    type languages = Array[String] | :any | nil
+
+    def initialize: (rules_path: String, ?name_type: name_type, ?rule_type: rule_type, ?concat: bool, ?max_phonemes: Integer) -> void
+    def self.encode: (String value, rules_path: String, ?name_type: name_type, ?rule_type: rule_type, ?concat: bool, ?max_phonemes: Integer) -> String
+    def self.encode_many: (Array[String] values, rules_path: String, ?name_type: name_type, ?rule_type: rule_type, ?concat: bool, ?max_phonemes: Integer) -> Array[String]
+
+    # Only instance encoding accepts explicit languages.
+    def encode: (String value, ?languages: languages) -> String
+  end
+end

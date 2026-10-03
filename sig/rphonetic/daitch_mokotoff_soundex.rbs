@@ -1,0 +1,9 @@
+module RPhonetic
+  class DaitchMokotoffSoundex < Encoder
+    def initialize: (rules: String, ?ascii_folding: bool) -> void
+    def self.encode: (String value, rules: String, ?ascii_folding: bool) -> String
+    def self.encode_many: (Array[String] values, rules: String, ?ascii_folding: bool) -> Array[String]
+
+    def codes: (String value) -> Array[String]
+  end
+end

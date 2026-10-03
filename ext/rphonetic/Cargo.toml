@@ -1,0 +1,13 @@
+[package]
+name = "rphonetic_ext"
+version = "1.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "rphonetic_ext"
+crate-type = ["cdylib"]
+
+[dependencies]
+magnus = "0.8"
+rphonetic = { version = "=4.0.0", default-features = false }

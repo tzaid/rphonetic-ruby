@@ -1,0 +1,12 @@
+module RPhonetic
+  class Soundex < Encoder
+    DEFAULT_MAPPING: String
+    GENEALOGY_MAPPING: String
+
+    def initialize: (?mapping: String, ?special_case_h_w: bool) -> void
+    def self.encode: (String value, ?mapping: String, ?special_case_h_w: bool) -> String
+    def self.encode_many: (Array[String] values, ?mapping: String, ?special_case_h_w: bool) -> Array[String]
+
+    def difference: (String first, String second) -> Integer
+  end
+end

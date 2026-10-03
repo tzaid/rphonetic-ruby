@@ -1,0 +1,11 @@
+module RPhonetic
+  # Abstract shared interface; instantiate a concrete algorithm.
+  class Encoder
+    def self.encode: (String value) -> String
+    def self.encode_many: (Array[String] values) -> Array[String]
+
+    def encode: (String value) -> String
+    def encode_many: (Array[String] values) -> Array[String]
+    def match?: (String first, String second) -> bool
+  end
+end

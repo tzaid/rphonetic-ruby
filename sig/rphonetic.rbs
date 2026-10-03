@@ -1,0 +1,7 @@
+module RPhonetic
+  VERSION: String
+
+  # Errors while loading or parsing caller-supplied phonetic rules.
+  class RuleError < ArgumentError
+  end
+end

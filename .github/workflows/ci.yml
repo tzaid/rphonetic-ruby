@@ -1,0 +1,148 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Validate signatures and generate API documentation
+        run: bundle exec rake rbs docs
+
+  build:
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: &native-targets
+          - runner: ubuntu-22.04
+            platform: x86_64-linux-gnu
+            toolchain: stable
+          - runner: ubuntu-22.04-arm
+            platform: aarch64-linux-gnu
+            toolchain: stable
+          - runner: macos-15-intel
+            platform: x86_64-darwin
+            toolchain: stable
+          - runner: macos-15
+            platform: arm64-darwin
+            toolchain: stable
+          - runner: windows-2022
+            platform: x64-mingw-ucrt
+            toolchain: stable-x86_64-pc-windows-gnu
+        ruby: &ruby-versions ["3.4", "4.0"]
+    env:
+      CARGO_PROFILE_RELEASE_STRIP: "none"
+      MACOSX_DEPLOYMENT_TARGET: "11.0"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libclang-dev
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.target.toolchain }}
+          components: rustfmt, clippy
+      - name: Check Rust formatting and lint
+        run: |
+          cargo fmt --check
+          cargo clippy --locked -- -D warnings
+      - name: Compile and test
+        run: bundle exec rake spec
+      - name: Stage this Ruby ABI
+        run: ruby script/stage_binary.rb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.target.platform }}-${{ matrix.ruby }}
+          # Keep the ABI directory inside the artifact for merged downloads.
+          path: lib/rphonetic/*/rphonetic_ext.*
+          if-no-files-found: error
+
+  package:
+    needs: build
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        target: *native-targets
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          # Assembly only: this job packages both prebuilt Ruby ABIs.
+          ruby-version: "3.4"
+      - name: Download all Ruby ABIs for this platform
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-${{ matrix.target.platform }}-*
+          path: lib/rphonetic
+          merge-multiple: true
+      - run: ruby script/package.rb --platform '${{ matrix.target.platform }}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gem-${{ matrix.target.platform }}
+          path: pkg/*.gem
+          if-no-files-found: error
+
+  install:
+    needs: package
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: *native-targets
+        ruby: *ruby-versions
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: gem-${{ matrix.target.platform }}
+          path: pkg
+      - name: Verify binary-only metadata and install
+        run: |
+          ruby -rrubygems/package -e 'spec = Gem::Package.new(Dir["pkg/*.gem"].fetch(0)).spec; abort "unexpected build hook" unless spec.extensions.empty?; abort "unexpected runtime dependencies" unless spec.runtime_dependencies.empty?'
+          gem install --local pkg/*.gem --no-document
+          gem install rspec -v '~> 3.13' --no-document
+      - name: Test installed gem without the source load path
+        # RSpec adds ./lib to the load path; run outside the checkout.
+        working-directory: ${{ runner.temp }}
+        run: rspec "$GITHUB_WORKSPACE/spec"
+
+  source:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+      - run: ruby script/package.rb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gem-source
+          path: pkg/*.gem
+          if-no-files-found: error

@@ -1,0 +1,5 @@
+module RPhonetic
+  class Caverphone2 < Encoder
+    def initialize: () -> void
+  end
+end

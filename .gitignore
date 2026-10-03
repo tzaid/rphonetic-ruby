@@ -1,0 +1,14 @@
+/.bundle/
+/.ruby-lsp/
+/vendor/
+/target/
+/tmp/
+/pkg/
+/doc/
+/.yardoc/
+/Gemfile.lock
+/lib/**/*.bundle
+/lib/**/*.so
+/lib/**/*.dll
+/ext/**/Makefile
+/ext/**/mkmf.log
