@@ -153,6 +153,28 @@ For local package verification with a single Ruby installation, run
 Ruby series) to the package command. This restricts the gem's Ruby requirement
 to that series. Release CI packages both ABIs.
 
+## Publishing
+
+The `Release` workflow runs when a `v*` tag is pushed. The tag must match
+`RPhonetic::VERSION` (for example, `v1.0.0`). It calls the full CI workflow,
+then verifies and publishes the exact six tested packages using RubyGems
+Trusted Publishing. Branch pushes and pull requests only run CI.
+
+For the first release, configure a pending trusted publisher on RubyGems with
+gem name `rphonetic`, repository owner `tzaid`, repository name `rphonetic-ruby`,
+workflow filename `release.yml`, and environment `release`. The optional
+Workflow Repository fields stay blank. No RubyGems API key is needed.
+
+Once the publisher is configured and release changes are committed and pushed:
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Published package versions cannot be overwritten. If publishing stops after
+only some packages are uploaded, inspect the RubyGems release before retrying.
+
 ## Versioning
 
 The gem uses independent, three-part semantic versions, starting at `1.0.0`.

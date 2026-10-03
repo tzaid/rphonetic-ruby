@@ -5,7 +5,7 @@ require_relative "lib/rphonetic/version"
 Gem::Specification.new do |spec|
   spec.name = "rphonetic"
   spec.version = RPhonetic::VERSION
-  spec.authors = ["Tariq"]
+  spec.authors = ["tzaid"]
   spec.homepage = "https://github.com/tzaid/rphonetic-ruby"
   spec.metadata = {
     "source_code_uri" => spec.homepage,
