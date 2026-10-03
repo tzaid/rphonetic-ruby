@@ -6,16 +6,16 @@ The wrapper pins rphonetic 4.0.0 and uses Magnus. Supports CRuby 3.4 and 4.0.
 ## Installation
 
 ```ruby
-gem "rphonetic", "~> 1.0"
+gem "rphonetic", "~> 0.1.0"
 ```
 
-This project has not been published yet. Build a local source gem with
+Build a local source gem with
 `bundle exec rake build`. Installing the source gem needs Rust and a C toolchain.
 The included CI workflow builds platform gems for Linux glibc (x64/ARM64),
 macOS (Intel/Apple Silicon), and Windows x64 UCRT, with binaries for Ruby
 3.4 and 4.0 in each package. Those packages require no Rust toolchain
-at installation. CI builds need to pass before these targets are considered
-verified. Linux builds target glibc 2.35 or newer; Alpine/musl is not included.
+at installation. CI verifies builds and installed gems on each supported target.
+Linux builds target glibc 2.35 or newer; Alpine/musl is not included.
 
 ## API
 
@@ -156,7 +156,7 @@ to that series. Release CI packages both ABIs.
 ## Publishing
 
 The `Release` workflow runs when a `v*` tag is pushed. The tag must match
-`RPhonetic::VERSION` (for example, `v1.0.0`). It calls the full CI workflow,
+`RPhonetic::VERSION` (for example, `v0.1.0`). It calls the full CI workflow,
 then verifies and publishes the exact six tested packages using RubyGems
 Trusted Publishing. Branch pushes and pull requests only run CI.
 
@@ -168,8 +168,8 @@ Workflow Repository fields stay blank. No RubyGems API key is needed.
 Once the publisher is configured and release changes are committed and pushed:
 
 ```sh
-git tag v1.0.0
-git push origin v1.0.0
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 Published package versions cannot be overwritten. If publishing stops after
@@ -177,11 +177,11 @@ only some packages are uploaded, inspect the RubyGems release before retrying.
 
 ## Versioning
 
-The gem uses independent, three-part semantic versions, starting at `1.0.0`.
-Patch releases fix bugs, minor releases add compatible Ruby functionality, and
-major releases introduce breaking changes to the Ruby API or behavior. Upstream
-crate updates are assessed by their effect on Ruby consumers rather than by
-copying the crate's version number. Gem `1.0.0` wraps rphonetic `4.0.0`.
+The gem uses independent, three-part semantic versions, starting at `0.1.0`.
+Before `1.0.0`, minor releases may introduce breaking API changes; patch releases
+preserve compatibility. Use `~> 0.1.0` to stay on the `0.1` release series.
+Upstream crate updates are assessed by their effect on Ruby consumers rather
+than by copying the crate's version number. Gem `0.1.0` wraps rphonetic `4.0.0`.
 
 ## License
 
